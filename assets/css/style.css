@@ -484,11 +484,6 @@ textarea {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(37, 99, 235, 0.35),
-    rgba(6, 182, 212, 0.25)
-  );
 }
 
 /* Модальное окно */
