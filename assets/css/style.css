@@ -480,12 +480,6 @@ textarea {
   background-position: center;
 }
 
-.auth-right::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-
 /* Модальное окно */
 .modal-overlay {
   position: fixed;
