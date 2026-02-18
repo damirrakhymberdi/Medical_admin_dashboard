@@ -1,44 +1,29 @@
-/* =========================
-   MediMetrics-like Base CSS
-   Step 1: App Shell (Layout)
-   ========================= */
-
-/* -------- CSS Variables -------- */
 :root {
-  --bg: #eef2f7;
+  --bg: #f5f6f8;
   --surface: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
-
   --border: #e5e7eb;
-
   --primary: #2563eb;
   --primary-100: #dbeafe;
-
-  --hover: #f1f5f9;
-  --focus: rgba(37, 99, 235, 0.25);
-
-  --radius: 12px;
-  --radius-sm: 10px;
-
-  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.1);
-
-  --sidebar-w: 220px;
-  --header-h: 60px;
-
-  --t-fast: 150ms;
-  --t-mid: 220ms;
+  --hover: #f3f4f6;
+  --focus: rgba(37, 99, 235, 0.08);
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sidebar-w: 260px;
+  --header-h: 56px;
 }
 
-/* -------- Reset / Base -------- */
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family:
@@ -56,11 +41,14 @@ body {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
+
 img {
   max-width: 100%;
   display: block;
 }
+
 button,
 input,
 select,
@@ -72,228 +60,285 @@ textarea {
   background: var(--primary-100);
 }
 
-/* Focus ring (nice accessible) */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
-/* -------- Layout -------- */
+/* Базовый layout */
 .layout {
   height: 100vh;
   display: flex;
 }
 
-/* -------- Sidebar -------- */
+/* Сайдбар */
 .sidebar {
   width: var(--sidebar-w);
-  background: var(--surface);
+  background: #ffffff;
   border-right: 1px solid var(--border);
-  padding: 18px 16px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .logo {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  font-size: 20px;
-  color: var(--primary);
-  padding: 8px 10px;
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px;
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
 }
 
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  display: block;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.3px;
+}
+
+.support-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #6b7280;
+  padding: 10px 12px;
+  background: transparent;
+}
+
+.support-info svg {
+  flex-shrink: 0;
+  color: #9ca3af;
+}
+
+/* Меню */
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 6px;
 }
 
 .menu-item {
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  color: #334155;
+  gap: 12px;
+  padding: 11px 12px;
+  color: #374151;
   font-size: 14px;
-
-  /* animation */
-  transition:
-    background var(--t-mid) ease,
-    color var(--t-mid) ease,
-    transform var(--t-fast) ease,
-    box-shadow var(--t-mid) ease;
+  font-weight: 500;
+  transition: background 0.15s ease;
+  position: relative;
 }
 
 .menu-item:hover {
   background: var(--hover);
-  transform: translateX(4px);
+}
+
+.menu-item:hover .menu-arrow {
+  opacity: 1;
 }
 
 .menu-item.active {
-  background: var(--primary);
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+  background: #eff6ff;
+  color: var(--primary);
 }
 
-/* -------- Main -------- */
+.menu-item.active .menu-icon {
+  color: var(--primary);
+}
+
+.menu-item.active .menu-arrow {
+  color: var(--primary);
+  opacity: 1;
+}
+
+.menu-icon {
+  flex-shrink: 0;
+  color: #6b7280;
+  transition: color 0.15s ease;
+}
+
+.menu-item span {
+  flex: 1;
+}
+
+.menu-arrow {
+  flex-shrink: 0;
+  color: #9ca3af;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  margin-left: auto;
+}
+
+.menu-item.hidden {
+  display: none;
+}
+
+/* Основная область */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* long content overflow fix */
+  min-width: 0;
+  background: var(--bg);
 }
 
-/* -------- Header -------- */
+/* Хедер */
 .header {
   height: var(--header-h);
-  background: var(--surface);
+  background: #fafbfc;
   border-bottom: 1px solid var(--border);
-  padding: 0 20px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
 .header input {
-  width: min(420px, 45vw);
-  padding: 10px 12px;
+  width: min(380px, 40vw);
+  padding: 8px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fbfdff;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
   color: var(--text);
-  transition:
-    border var(--t-mid) ease,
-    box-shadow var(--t-mid) ease;
+  font-size: 13px;
+  transition: none;
 }
 
 .header input::placeholder {
-  color: #94a3b8;
+  color: #a1a8b3;
+  font-size: 13px;
 }
 
 .header input:focus {
-  border-color: rgba(37, 99, 235, 0.55);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  border-color: #d1d5db;
+  background: #ffffff;
+  box-shadow: none;
   outline: none;
 }
 
 .user {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #475569;
-  font-size: 14px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: #f8fafc;
+  gap: 6px;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: #f3f4f6;
   border: 1px solid var(--border);
 }
 
-/* -------- Content -------- */
+/* Контент */
 .content {
-  padding: 24px;
+  padding: 20px;
   overflow: auto;
-  min-height: calc(100vh - var(--header-h));
-
-  /* page "soft appear" */
-  animation: fadeIn 260ms ease-in-out;
+  flex: 1;
 }
 
-/* Subtle animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Скроллбар */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* -------- Reusable UI (for next steps) -------- */
-/* Card */
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Карточка */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--shadow-sm);
-  transition:
-    transform var(--t-mid) ease,
-    box-shadow var(--t-mid) ease;
 }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Buttons (ready for later) */
+/* Кнопки */
 .btn {
   border: 1px solid transparent;
   background: var(--primary);
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-
-  transition:
-    transform var(--t-fast) ease,
-    box-shadow var(--t-fast) ease,
-    background var(--t-mid) ease,
-    opacity var(--t-mid) ease;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+  opacity: 0.9;
 }
 
 .btn:active {
-  transform: translateY(0);
-  box-shadow: none;
+  opacity: 0.8;
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .btn-secondary {
   background: #f8fafc;
-  color: #0f172a;
+  color: var(--text);
   border-color: var(--border);
 }
 
 .btn-secondary:hover {
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  background: #f1f3f5;
 }
 
-/* Inputs (ready for forms) */
+/* Поля ввода */
 .input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fbfdff;
-  transition:
-    border var(--t-mid) ease,
-    box-shadow var(--t-mid) ease;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  font-size: 14px;
+  transition: border-color 0.15s ease;
 }
 
 .input:focus {
-  border-color: rgba(37, 99, 235, 0.55);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  border-color: var(--primary);
+  box-shadow: none;
   outline: none;
 }
 
-/* Status badge (for schedule later) */
+/* Бейджи статусов */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -311,23 +356,26 @@ textarea {
   border-color: #bfdbfe;
   color: #1d4ed8;
 }
+
 .badge.arrived {
   background: #ecfeff;
   border-color: #a5f3fc;
   color: #0e7490;
 }
+
 .badge.completed {
   background: #ecfdf5;
   border-color: #bbf7d0;
   color: #047857;
 }
+
 .badge.cancelled {
   background: #fef2f2;
   border-color: #fecaca;
   color: #b91c1c;
 }
 
-/* Table base (for schedule/patients later) */
+/* Таблица */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -335,65 +383,75 @@ textarea {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  font-size: 14px;
 }
 
 .table th,
 .table td {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
-  font-size: 14px;
+  text-align: left;
 }
 
 .table th {
-  text-align: left;
   color: #475569;
   background: #f8fafc;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .table tr:hover td {
-  background: #fbfdff;
+  background: #f9fafb;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
 }
 
 .muted {
   color: var(--muted);
 }
 
-/* Auth page */
-.auth-wrap {
+/* Страница авторизации */
+.auth-split {
   min-height: 100vh;
   display: grid;
-  place-items: center;
-  padding: 24px;
+  grid-template-columns: 600px 1fr;
+  background: var(--bg);
 }
 
-.auth-card {
-  width: min(420px, 100%);
+.auth-left {
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+}
+
+.auth-panel {
+  width: min(400px, 100%);
+}
+
+.auth-topbar {
+  position: absolute;
+  left: 28px;
+  top: 22px;
 }
 
 .auth-brand {
   font-weight: 900;
   color: var(--primary);
-  font-size: 20px;
-  margin-bottom: 8px;
+  font-size: 22px;
+  letter-spacing: 0.2px;
 }
 
 .auth-title {
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.auth-subtitle {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 14px;
+  font-size: 25px;
+  font-weight: 900;
+  margin: 0 0 6px;
 }
 
 .auth-form {
-  margin-top: 16px;
   display: grid;
-  gap: 12px;
+  gap: 5px;
 }
 
 .auth-label {
@@ -415,7 +473,25 @@ textarea {
   font-size: 12px;
 }
 
-/* Modal */
+.auth-right {
+  position: relative;
+  background-image: url("/assets/images/img_auth.jpeg");
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.35),
+    rgba(6, 182, 212, 0.25)
+  );
+}
+
+/* Модальное окно */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -431,9 +507,8 @@ textarea {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  animation: fadeIn 180ms ease-in-out;
 }
 
 .modal-header {
@@ -447,7 +522,8 @@ textarea {
 }
 
 .modal-title {
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 .modal-body {
@@ -456,8 +532,18 @@ textarea {
 
 .modal-close {
   padding: 8px 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
 }
 
+.modal-close:hover {
+  background: var(--hover);
+}
+
+/* Спиннер */
 .spinner {
   display: inline-block;
   width: 16px;
@@ -478,39 +564,256 @@ textarea {
   display: none !important;
 }
 
-/* -------- Responsive (basic) -------- */
+/* РАСПИСАНИЕ */
+.schedule-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.schedule-controls select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.schedule-controls select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* ПАЦИЕНТЫ */
+.patients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.patients-search {
+  flex: 1;
+  max-width: 400px;
+}
+
+/* ОПЛАТЫ */
+.payment-form {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 8px;
+}
+
+.payment-method {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.payment-method:hover {
+  border-color: #d1d5db;
+}
+
+.payment-method.selected {
+  border-color: var(--primary);
+  background: #eff6ff;
+  color: var(--primary);
+}
+
+/* ОТЧЕТЫ */
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.report-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.report-card-title {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.report-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ВИЗИТ */
+.visit-form {
+  display: grid;
+  gap: 14px;
+}
+
+.visit-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.visit-form textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* ФОРМА */
+.form-row {
+  display: grid;
+  gap: 12px;
+}
+
+.form-row.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.form-label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Пустое состояние */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.empty-state-text {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Загрузка */
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+/* Ошибка */
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #b91c1c;
+}
+
+/* Адаптивность */
 @media (max-width: 900px) {
-  :root {
-    --sidebar-w: 200px;
-  }
   .header input {
     width: min(320px, 42vw);
   }
-}
 
-@media (max-width: 760px) {
-  .layout {
+  .schedule-controls {
     flex-direction: column;
   }
+
+  .patients-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patients-search {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+    width: 220px;
   }
-  .menu {
-    flex-direction: row;
-    gap: 8px;
-    overflow: auto;
-    padding: 0;
+
+  .logo-text {
+    font-size: 16px;
   }
+
   .menu-item {
-    white-space: nowrap;
-    transform: none;
+    font-size: 13px;
+    padding: 9px 10px;
   }
-  .menu-item:hover {
-    transform: none;
+
+  .header {
+    padding: 0 12px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .form-row.cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .report-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .auth-split {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-right {
+    display: none;
   }
 }
