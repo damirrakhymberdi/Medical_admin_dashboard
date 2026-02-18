@@ -475,7 +475,7 @@ textarea {
 
 .auth-right {
   position: relative;
-  background-image: url("assets/images/img_auth.jpeg");
+  background-image: url("/assets/images/imgauth.jpeg");
   background-size: cover;
   background-position: center;
 }
