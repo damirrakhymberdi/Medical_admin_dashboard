@@ -1,27 +1,27 @@
-// features/schedule/schedule.controller.js
 import { getDoctors, getSchedule } from "../../core/api.js";
 import { getState, setState } from "../../core/state.js";
 import {
   renderScheduleLayout,
+  renderCalendarGrid,
   renderLoading,
   renderError,
   renderEmpty,
-  renderTable,
 } from "./schedule.view.js";
 
 export async function mountSchedulePage() {
   const page = document.getElementById("page-content");
 
   try {
-    page.innerHTML = `<p class="muted">Loading doctors…</p>`;
+    page.innerHTML = renderLoading();
 
     const doctors = await getDoctors();
     const state = getState();
 
-    const selectedDoctorId = state.selectedDoctorId || doctors[0]?.id || "";
-    const selectedDate = state.selectedDate;
+    const selectedDoctorId = state.selectedDoctorId || "";
+    const today = new Date().toISOString().slice(0, 10);
+    const selectedDate = state.selectedDate || today;
 
-    setState({ doctors, selectedDoctorId });
+    setState({ doctors, selectedDoctorId, selectedDate });
 
     page.innerHTML = renderScheduleLayout({
       doctors,
@@ -30,48 +30,80 @@ export async function mountSchedulePage() {
     });
 
     const doctorSelect = document.getElementById("doctorSelect");
-    const dateInput = document.getElementById("dateInput");
+    if (doctorSelect) {
+      doctorSelect.addEventListener("change", () => {
+        setState({ selectedDoctorId: doctorSelect.value });
+        loadCalendarGrid();
+      });
+    }
 
-    doctorSelect.addEventListener("change", () => {
-      setState({ selectedDoctorId: doctorSelect.value });
-      loadSchedule();
+    window.addEventListener("schedule:dateChanged", (e) => {
+      setState({ selectedDate: e.detail });
+      loadCalendarGrid();
     });
 
-    dateInput.addEventListener("change", () => {
-      setState({ selectedDate: dateInput.value });
-      loadSchedule();
-    });
+    // Global функция appointment click үшін
+    window.handleAppointmentClick = (appointmentId) => {
+      window.location.hash = `#visit?id=${appointmentId}`;
+    };
 
-    loadSchedule();
+    loadCalendarGrid();
   } catch (err) {
     page.innerHTML = renderError(
-      err?.message || "Failed to load schedule page",
+      err?.message || "Не удалось загрузить расписание"
     );
   }
 }
 
-async function loadSchedule() {
-  const { selectedDoctorId, selectedDate } = getState();
+async function loadCalendarGrid() {
+  const { doctors, selectedDoctorId, selectedDate } = getState();
   const box = document.getElementById("scheduleContent");
 
   if (!box) return;
 
-  if (!selectedDoctorId) {
-    box.innerHTML = `<p class="muted">Please select a doctor.</p>`;
-    return;
-  }
-
   try {
     box.innerHTML = renderLoading();
-    const list = await getSchedule(selectedDoctorId, selectedDate);
 
-    if (!list.length) {
+    // Егер "Все врачи" таңдалса, барлық врачтарға жүктейміз
+    const doctorsToShow = selectedDoctorId 
+      ? doctors.filter(d => d.id === selectedDoctorId)
+      : doctors;
+
+    if (doctorsToShow.length === 0) {
       box.innerHTML = renderEmpty();
       return;
     }
 
-    box.innerHTML = renderTable(list);
+    // Барлық врачтар үшін appointments жүктейміз
+    const appointmentsPromises = doctorsToShow.map(doctor =>
+      getSchedule(doctor.id, selectedDate)
+    );
+
+    const appointmentsArrays = await Promise.all(appointmentsPromises);
+    
+    // Барлық appointments-ты біріктіреміз
+    const allAppointments = appointmentsArrays.flat();
+
+    // Duration қосамыз (API-да жоқ болса, default 30 мин)
+    const appointmentsWithDuration = allAppointments.map(appt => ({
+      ...appt,
+      duration: appt.duration || 30,
+    }));
+
+    if (appointmentsWithDuration.length === 0) {
+      box.innerHTML = renderEmpty();
+      return;
+    }
+
+    box.innerHTML = renderCalendarGrid({
+      doctors: doctorsToShow,
+      appointments: appointmentsWithDuration,
+      selectedDate,
+    });
+
   } catch (err) {
-    box.innerHTML = renderError(err?.message || "Failed to load schedule");
+    box.innerHTML = renderError(
+      err?.message || "Не удалось загрузить данные"
+    );
   }
 }
