@@ -1,8 +1,15 @@
-import { getDoctors, getSchedule } from "../../core/api.js";
+import {
+  getDoctors,
+  getSchedule,
+  createAppointment,
+  searchPatients,
+} from "../../core/api.js";
 import { getState, setState } from "../../core/state.js";
+import { openModal, closeModal } from "../../ui/modal.js";
 import {
   renderScheduleLayout,
   renderCalendarGrid,
+  renderAddAppointmentForm,
   renderLoading,
   renderError,
   renderEmpty,
@@ -10,47 +17,38 @@ import {
 
 export async function mountSchedulePage() {
   const page = document.getElementById("page-content");
-
   try {
     page.innerHTML = renderLoading();
-
     const doctors = await getDoctors();
     const state = getState();
-
     const selectedDoctorId = state.selectedDoctorId || "";
-    const today = new Date().toISOString().slice(0, 10);
-    const selectedDate = state.selectedDate || today;
-
+    const selectedDate =
+      state.selectedDate || new Date().toISOString().slice(0, 10);
     setState({ doctors, selectedDoctorId, selectedDate });
-
     page.innerHTML = renderScheduleLayout({
       doctors,
       selectedDoctorId,
       selectedDate,
     });
 
-    const doctorSelect = document.getElementById("doctorSelect");
-    if (doctorSelect) {
-      doctorSelect.addEventListener("change", () => {
-        setState({ selectedDoctorId: doctorSelect.value });
-        loadCalendarGrid();
-      });
-    }
-
+    document.getElementById("doctorSelect")?.addEventListener("change", (e) => {
+      setState({ selectedDoctorId: e.target.value });
+      loadCalendarGrid();
+    });
     window.addEventListener("schedule:dateChanged", (e) => {
       setState({ selectedDate: e.detail });
       loadCalendarGrid();
     });
-
-    // Global функция appointment click үшін
-    window.handleAppointmentClick = (appointmentId) => {
-      window.location.hash = `#visit?id=${appointmentId}`;
+    window.handleAppointmentClick = (id) => {
+      window.location.hash = `#visit?id=${id}`;
     };
-
+    document
+      .getElementById("addAppointmentBtn")
+      ?.addEventListener("click", openAddAppointmentModal);
     loadCalendarGrid();
   } catch (err) {
     page.innerHTML = renderError(
-      err?.message || "Не удалось загрузить расписание"
+      err?.message || "Не удалось загрузить расписание",
     );
   }
 }
@@ -58,52 +56,79 @@ export async function mountSchedulePage() {
 async function loadCalendarGrid() {
   const { doctors, selectedDoctorId, selectedDate } = getState();
   const box = document.getElementById("scheduleContent");
-
   if (!box) return;
-
   try {
     box.innerHTML = renderLoading();
-
-    // Егер "Все врачи" таңдалса, барлық врачтарға жүктейміз
-    const doctorsToShow = selectedDoctorId 
-      ? doctors.filter(d => d.id === selectedDoctorId)
+    const doctorsToShow = selectedDoctorId
+      ? doctors.filter((d) => d.id === selectedDoctorId)
       : doctors;
-
-    if (doctorsToShow.length === 0) {
+    if (!doctorsToShow.length) {
       box.innerHTML = renderEmpty();
       return;
     }
-
-    // Барлық врачтар үшін appointments жүктейміз
-    const appointmentsPromises = doctorsToShow.map(doctor =>
-      getSchedule(doctor.id, selectedDate)
+    const arrays = await Promise.all(
+      doctorsToShow.map((d) => getSchedule(d.id, selectedDate)),
     );
-
-    const appointmentsArrays = await Promise.all(appointmentsPromises);
-    
-    // Барлық appointments-ты біріктіреміз
-    const allAppointments = appointmentsArrays.flat();
-
-    // Duration қосамыз (API-да жоқ болса, default 30 мин)
-    const appointmentsWithDuration = allAppointments.map(appt => ({
-      ...appt,
-      duration: appt.duration || 30,
-    }));
-
-    if (appointmentsWithDuration.length === 0) {
+    const all = arrays
+      .flat()
+      .map((a) => ({ ...a, duration: a.duration || 30 }));
+    if (!all.length) {
       box.innerHTML = renderEmpty();
       return;
     }
-
     box.innerHTML = renderCalendarGrid({
       doctors: doctorsToShow,
-      appointments: appointmentsWithDuration,
+      appointments: all,
       selectedDate,
     });
-
   } catch (err) {
-    box.innerHTML = renderError(
-      err?.message || "Не удалось загрузить данные"
-    );
+    box.innerHTML = renderError(err?.message || "Не удалось загрузить данные");
   }
+}
+
+async function openAddAppointmentModal() {
+  const { doctors, selectedDate } = getState();
+  let patients = [];
+  try {
+    patients = await searchPatients("");
+  } catch {}
+  openModal({
+    title: "Новая запись",
+    content: renderAddAppointmentForm({ doctors, patients }),
+  });
+
+  const form = document.getElementById("addApptForm");
+  const errBox = document.getElementById("apptFormError");
+  const saveBtn = document.getElementById("saveApptBtn");
+  const dateInput = form?.querySelector('[name="date"]');
+  if (dateInput) dateInput.value = selectedDate;
+
+  document
+    .getElementById("cancelApptForm")
+    ?.addEventListener("click", closeModal);
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errBox.textContent = "";
+    saveBtn.disabled = true;
+    const old = saveBtn.textContent;
+    saveBtn.textContent = "Создаём...";
+    try {
+      const fd = new FormData(form);
+      await createAppointment({
+        doctorId: fd.get("doctorId"),
+        patientId: fd.get("patientId"),
+        date: fd.get("date"),
+        time: fd.get("time"),
+        duration: Number(fd.get("duration")),
+      });
+      closeModal();
+      setState({ selectedDate: fd.get("date") });
+      loadCalendarGrid();
+    } catch (err) {
+      errBox.textContent = err?.message || "Ошибка создания записи";
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = old;
+    }
+  });
 }

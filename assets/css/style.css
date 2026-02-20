@@ -1264,7 +1264,7 @@ textarea {
 /* ===== PATIENTS COMPACT LIST STYLE ===== */
 
 .patients-container {
-  padding: 10px;
+  padding: 0px;
   max-width: 1300px;
   margin: 0 auto;
 }
@@ -1488,7 +1488,7 @@ textarea {
 /* ===== PAYMENTS COMPACT LIST STYLE ===== */
 
 .payments-container {
-  padding: 10px;
+  padding: 0px;
   max-width: 1300px;
   margin: 0 auto;
 }
@@ -1568,11 +1568,11 @@ textarea {
 
 /* Error */
 .payments-error {
-  min-height: 18px;
+  min-height: 0px;
   color: #b91c1c;
   font-size: 13px;
-  padding: 0 16px;
-  margin-top: 8px;
+  padding: 0px;
+  margin-top: 0px;
 }
 
 /* Content */
@@ -1766,4 +1766,208 @@ textarea {
     font-size: 11px;
   }
 }
-  
+
+/* ===== VISIT PAGE ===== */
+.visit-shell {
+  padding: 0;
+}
+
+.visit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.visit-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.visit-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.visit-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.visit-back-btn:hover {
+  background: var(--hover);
+}
+
+.visit-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.visit-patient-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.visit-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.visit-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.visit-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.visit-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.visit-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f9fafb;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.visit-textarea:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  outline: none;
+}
+
+.visit-textarea:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.visit-footer {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: #fafbfc;
+  border-top: 1px solid var(--border);
+}
+
+.visit-completed-badge {
+  font-size: 13px;
+  font-weight: 600;
+  color: #047857;
+  background: #d1fae5;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #a7f3d0;
+}
+
+.visit-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* ===== REPORT PAGE ===== */
+.report-container {
+  padding: 0px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.report-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.report-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.report-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0;
+  margin-top: 0;
+  border: 1px solid var(--border);
+  border-top: none;
+}
+
+.report-stat-card {
+  padding: 20px 24px;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+}
+
+.report-stat-card:last-child {
+  border-right: none;
+}
+
+.report-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.report-stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+#reportPayments {
+  border: 1px solid var(--border);
+  border-top: none;
+  background: #ffffff;
+}

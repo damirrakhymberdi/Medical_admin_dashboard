@@ -1,4 +1,3 @@
-// features/patients/patients.controller.js
 import {
   searchPatients,
   createPatient,
@@ -28,49 +27,41 @@ export function mountPatientsPage() {
   const stateBox = document.getElementById("patientsState");
   const tableBox = document.getElementById("patientsTable");
 
-  // Initial load
-  loadPatients("");
+  const hash = window.location.hash || "";
+  const q = new URLSearchParams(hash.split("?")[1] || "").get("q") || "";
+  if (q) searchInput.value = q;
 
-  // Debounced search
+  loadPatients(searchInput.value);
+
   searchInput.addEventListener("input", () => {
     clearTimeout(searchTimer);
-    const q = searchInput.value;
-    searchTimer = setTimeout(() => loadPatients(q), 250);
+    searchTimer = setTimeout(() => loadPatients(searchInput.value), 250);
   });
 
-  // Create
   createBtn.addEventListener("click", () => openCreateModal());
 
-  // Actions in table (event delegation)
-  tableBox.addEventListener("click", async (e) => {
+  tableBox.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
-
-    const action = btn.dataset.action;
-    const id = btn.dataset.id;
-
-    if (action === "view") openViewModal(id);
-    if (action === "edit") openEditModal(id);
+    if (btn.dataset.action === "view") openViewModal(btn.dataset.id);
+    if (btn.dataset.action === "edit") openEditModal(btn.dataset.id);
   });
 
   async function loadPatients(query) {
     try {
-      stateBox.innerHTML = renderLoading("Loading patients…");
+      stateBox.innerHTML = renderLoading("Загрузка пациентов...");
       tableBox.innerHTML = "";
-
       const list = await searchPatients(query);
       setState({ patients: list });
-
       if (!list.length) {
         stateBox.innerHTML = renderEmpty();
         return;
       }
-
       stateBox.innerHTML = "";
       tableBox.innerHTML = renderPatientsTable(list);
     } catch (err) {
       stateBox.innerHTML = renderError(
-        err?.message || "Failed to load patients",
+        err?.message || "Не удалось загрузить пациентов",
       );
       tableBox.innerHTML = "";
     }
@@ -78,40 +69,31 @@ export function mountPatientsPage() {
 
   function openCreateModal() {
     openModal({
-      title: "Create patient",
+      title: "Новый пациент",
       content: renderPatientForm({ mode: "create", patient: null }),
     });
-
     const form = document.getElementById("patientForm");
     const cancel = document.getElementById("cancelPatientForm");
     const saveBtn = document.getElementById("savePatientBtn");
     const errBox = document.getElementById("patientFormError");
-
     cancel.addEventListener("click", closeModal);
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       errBox.textContent = "";
-
       saveBtn.disabled = true;
       const old = saveBtn.textContent;
-      saveBtn.textContent = "Creating…";
-
+      saveBtn.textContent = "Создаём...";
       try {
         const fd = new FormData(form);
-        const data = {
+        await createPatient({
           name: fd.get("name"),
           phone: fd.get("phone"),
           birthDate: fd.get("birthDate"),
-        };
-
-        await createPatient(data);
+        });
         closeModal();
-
-        // reload list with current query
         loadPatients(searchInput.value);
       } catch (err) {
-        errBox.textContent = err?.message || "Create failed";
+        errBox.textContent = err?.message || "Ошибка создания";
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = old;
@@ -121,48 +103,37 @@ export function mountPatientsPage() {
 
   async function openEditModal(patientId) {
     openModal({
-      title: "Edit patient",
-      content: renderLoading("Loading patient…"),
+      title: "Редактирование пациента",
+      content: renderLoading("Загрузка..."),
     });
-
     try {
       const patient = await getPatientById(patientId);
-
-      // replace modal body with form
       openModal({
-        title: "Edit patient",
+        title: "Редактирование пациента",
         content: renderPatientForm({ mode: "edit", patient }),
       });
-
       const form = document.getElementById("patientForm");
       const cancel = document.getElementById("cancelPatientForm");
       const saveBtn = document.getElementById("savePatientBtn");
       const errBox = document.getElementById("patientFormError");
-
       cancel.addEventListener("click", closeModal);
-
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         errBox.textContent = "";
-
         saveBtn.disabled = true;
         const old = saveBtn.textContent;
-        saveBtn.textContent = "Saving…";
-
+        saveBtn.textContent = "Сохраняем...";
         try {
           const fd = new FormData(form);
-          const patch = {
+          await updatePatient(patientId, {
             name: fd.get("name"),
             phone: fd.get("phone"),
             birthDate: fd.get("birthDate"),
-          };
-
-          await updatePatient(patientId, patch);
+          });
           closeModal();
-
           loadPatients(searchInput.value);
         } catch (err) {
-          errBox.textContent = err?.message || "Save failed";
+          errBox.textContent = err?.message || "Ошибка сохранения";
         } finally {
           saveBtn.disabled = false;
           saveBtn.textContent = old;
@@ -170,22 +141,27 @@ export function mountPatientsPage() {
       });
     } catch (err) {
       openModal({
-        title: "Edit patient",
-        content: renderError(err?.message || "Failed to load patient"),
+        title: "Редактирование пациента",
+        content: renderError(err?.message || "Не удалось загрузить пациента"),
       });
     }
   }
 
   async function openViewModal(patientId) {
-    openModal({ title: "Patient card", content: renderLoading("Loading…") });
-
+    openModal({
+      title: "Карточка пациента",
+      content: renderLoading("Загрузка..."),
+    });
     try {
       const patient = await getPatientById(patientId);
-      openModal({ title: "Patient card", content: renderPatientCard(patient) });
+      openModal({
+        title: "Карточка пациента",
+        content: renderPatientCard(patient),
+      });
     } catch (err) {
       openModal({
-        title: "Patient card",
-        content: renderError(err?.message || "Failed to load patient"),
+        title: "Карточка пациента",
+        content: renderError(err?.message || "Не удалось загрузить пациента"),
       });
     }
   }

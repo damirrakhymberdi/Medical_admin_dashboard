@@ -1,10 +1,26 @@
-export function renderPaymentsPage({ date }) {
+export function renderPaymentsPage({ date, patients = [] }) {
+  const patientOptions = patients.length
+    ? patients
+        .map(
+          (p) =>
+            `<option value="${p.id}">${escapeHtml(p.name)} — ${escapeHtml(p.phone)}</option>`,
+        )
+        .join("")
+    : `<option value="">— нет пациентов —</option>`;
+
   return `
     <div class="payments-container">
       <div class="payments-toolbar">
         <div class="payments-form-group">
           <label class="payments-label">Дата</label>
           <input id="payDate" class="payments-input" type="date" value="${date}" />
+        </div>
+
+        <div class="payments-form-group">
+          <label class="payments-label">Пациент</label>
+          <select id="payPatient" class="payments-input">
+            ${patientOptions}
+          </select>
         </div>
 
         <div class="payments-form-group">

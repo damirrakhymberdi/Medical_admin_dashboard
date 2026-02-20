@@ -1,91 +1,5 @@
 // features/report/report.view.js
 
-export function renderReportPage({ date }) {
-  return `
-    <h1>Day Report</h1>
-
-    <div class="card" style="margin-top:16px;">
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:end;">
-        <div style="min-width:220px;">
-          <label class="muted" style="font-size:12px;">Date</label>
-          <input id="reportDate" class="input" type="date" value="${date}" />
-        </div>
-        <button id="refreshReportBtn" class="btn btn-secondary" type="button">Refresh</button>
-      </div>
-
-      <div id="reportState" style="margin-top:14px;"></div>
-
-      <div id="reportSummary" style="margin-top:14px;"></div>
-
-      <div style="margin-top:16px;">
-        <div class="muted" style="font-size:12px; margin-bottom:8px;">Payments</div>
-        <div id="reportPayments"></div>
-      </div>
-    </div>
-  `;
-}
-
-export function renderLoading(text = "Loading…") {
-  return `<p class="muted">${escapeHtml(text)}</p>`;
-}
-
-export function renderError(message) {
-  return `<p style="color:#b91c1c;">${escapeHtml(message)}</p>`;
-}
-
-export function renderSummary({ totalAmount, visitsCompleted }) {
-  return `
-    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-      <div class="card" style="flex:1; min-width:220px;">
-        <div class="muted" style="font-size:12px;">Total amount</div>
-        <div style="font-size:26px; font-weight:900; margin-top:6px;">
-          ${Number(totalAmount).toLocaleString()}
-        </div>
-      </div>
-
-      <div class="card" style="flex:1; min-width:220px;">
-        <div class="muted" style="font-size:12px;">Visits completed</div>
-        <div style="font-size:26px; font-weight:900; margin-top:6px;">
-          ${Number(visitsCompleted).toLocaleString()}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-export function renderEmptyPayments() {
-  return `<p class="muted">No payments for this date.</p>`;
-}
-
-export function renderPaymentsTable(list) {
-  return `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Patient</th>
-          <th>Amount</th>
-          <th>Method</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${list
-          .map(
-            (p) => `
-          <tr>
-            <td>${escapeHtml(p.time)}</td>
-            <td>${escapeHtml(p.patientName)}</td>
-            <td>${Number(p.amount).toLocaleString()}</td>
-            <td><span class="badge">${escapeHtml(p.method)}</span></td>
-          </tr>
-        `,
-          )
-          .join("")}
-      </tbody>
-    </table>
-  `;
-}
-
 function escapeHtml(str) {
   return String(str ?? "")
     .replaceAll("&", "&amp;")
@@ -93,4 +7,118 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+export function renderReportPage({ date }) {
+  return `
+    <div class="report-container">
+
+      <!-- Toolbar -->
+      <div class="report-toolbar">
+        <div class="report-form-group">
+          <label class="report-label">Дата</label>
+          <input id="reportDate" class="payments-input" type="date" value="${date}" />
+        </div>
+        <button id="refreshReportBtn" class="btn btn-secondary" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Обновить
+        </button>
+      </div>
+
+      <!-- State (loading/error) -->
+      <div id="reportState"></div>
+
+      <!-- Summary cards -->
+      <div id="reportSummary"></div>
+
+      <!-- Payments list -->
+      <div id="reportPayments"></div>
+
+    </div>
+  `;
+}
+
+export function renderLoading(text = "Загрузка…") {
+  return `
+    <div class="payments-empty" style="margin-top:16px;">
+      <div class="spinner"></div>
+      <div style="margin-top:12px; color:var(--muted); font-size:14px;">${escapeHtml(text)}</div>
+    </div>
+  `;
+}
+
+export function renderError(message) {
+  return `
+    <div class="payments-empty" style="margin-top:16px;">
+      <div style="font-size:32px; margin-bottom:8px;">⚠️</div>
+      <div style="color:#b91c1c; font-size:14px;">${escapeHtml(message)}</div>
+    </div>
+  `;
+}
+
+export function renderSummary({ totalAmount, visitsCompleted }) {
+  return `
+    <div class="report-summary-grid">
+      <div class="report-stat-card">
+        <div class="report-stat-label">Общая сумма</div>
+        <div class="report-stat-value">${Number(totalAmount).toLocaleString()} ₸</div>
+      </div>
+      <div class="report-stat-card">
+        <div class="report-stat-label">Завершённых визитов</div>
+        <div class="report-stat-value">${Number(visitsCompleted)}</div>
+      </div>
+    </div>
+  `;
+}
+
+export function renderEmptyPayments() {
+  return `
+    <div class="payments-empty" style="margin-top:0;">
+      <div style="font-size:32px; margin-bottom:8px;">💰</div>
+      <div style="color:var(--muted); font-size:14px;">Нет оплат за эту дату</div>
+    </div>
+  `;
+}
+
+export function renderPaymentsTable(list) {
+  const total = list.reduce((s, p) => s + Number(p.amount), 0);
+  return `
+    <div class="payments-summary">
+      <div class="payments-summary-item">
+        <span class="payments-summary-label">Всего платежей:</span>
+        <span class="payments-summary-value">${list.length}</span>
+      </div>
+      <div class="payments-summary-item">
+        <span class="payments-summary-label">Итого:</span>
+        <span class="payments-summary-value payments-summary-total">${total.toLocaleString()} ₸</span>
+      </div>
+    </div>
+
+    <div class="payments-list">
+      ${list
+        .map(
+          (p) => `
+        <div class="payment-item">
+          <div class="payment-indicator"></div>
+          <div class="payment-info">
+            <div class="payment-header">
+              <span class="payment-time">${escapeHtml(p.time)}</span>
+              <span class="payment-amount">${Number(p.amount).toLocaleString()} ₸</span>
+            </div>
+            <div class="payment-details">
+              <span class="payment-patient">${escapeHtml(p.patientName)}</span>
+              <span class="payment-method-badge ${escapeHtml(p.method)}">
+                ${p.method === "cash" ? "💵 Наличные" : "💳 Карта"}
+              </span>
+            </div>
+          </div>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+  `;
 }
