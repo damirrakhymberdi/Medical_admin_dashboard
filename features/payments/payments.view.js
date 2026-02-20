@@ -1,81 +1,109 @@
-// features/payments/payments.view.js
-
 export function renderPaymentsPage({ date }) {
   return `
-    <h1>Payments</h1>
-
-    <div class="card" style="margin-top:16px;">
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:end;">
-        <div style="min-width:220px;">
-          <label class="muted" style="font-size:12px;">Date</label>
-          <input id="payDate" class="input" type="date" value="${date}" />
+    <div class="payments-container">
+      <div class="payments-toolbar">
+        <div class="payments-form-group">
+          <label class="payments-label">Дата</label>
+          <input id="payDate" class="payments-input" type="date" value="${date}" />
         </div>
 
-        <div style="min-width:220px;">
-          <label class="muted" style="font-size:12px;">Amount</label>
-          <input id="payAmount" class="input" type="number" placeholder="0" min="0" />
+        <div class="payments-form-group">
+          <label class="payments-label">Сумма</label>
+          <input id="payAmount" class="payments-input" type="number" placeholder="0" min="0" />
         </div>
 
-        <div style="min-width:220px;">
-          <label class="muted" style="font-size:12px;">Method</label>
-          <select id="payMethod" class="input">
-            <option value="cash">cash</option>
-            <option value="card">card</option>
+        <div class="payments-form-group">
+          <label class="payments-label">Метод</label>
+          <select id="payMethod" class="payments-input">
+            <option value="cash">Наличные</option>
+            <option value="card">Карта</option>
           </select>
         </div>
 
-        <button id="paySubmit" class="btn" type="button">Accept</button>
+        <button id="paySubmit" class="payments-submit-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Принять
+        </button>
       </div>
 
-      <div id="payError" style="min-height:18px; color:#b91c1c; font-size:13px; margin-top:10px;"></div>
+      <div id="payError" class="payments-error"></div>
 
-      <div style="margin-top:14px;">
-        <div class="muted" style="font-size:12px; margin-bottom:8px;">Payments list</div>
+      <div class="payments-content">
         <div id="paymentsState"></div>
-        <div id="paymentsTable" style="margin-top:10px;"></div>
+        <div id="paymentsTable"></div>
       </div>
     </div>
   `;
 }
 
-export function renderLoading(text = "Loading…") {
-  return `<p class="muted">${escapeHtml(text)}</p>`;
+export function renderLoading(text = "Загрузка…") {
+  return `
+    <div class="payments-empty">
+      <div class="spinner"></div>
+      <div style="margin-top:12px; color:var(--muted); font-size:14px;">${escapeHtml(text)}</div>
+    </div>
+  `;
 }
 
 export function renderError(message) {
-  return `<p style="color:#b91c1c;">${escapeHtml(message)}</p>`;
+  return `
+    <div class="payments-empty">
+      <div style="font-size:32px; margin-bottom:8px;">⚠️</div>
+      <div style="color:#b91c1c; font-size:14px;">${escapeHtml(message)}</div>
+    </div>
+  `;
 }
 
 export function renderEmpty() {
-  return `<p class="muted">No payments for this date.</p>`;
+  return `
+    <div class="payments-empty">
+      <div style="font-size:32px; margin-bottom:8px;">💰</div>
+      <div style="color:var(--muted); font-size:14px;">Нет платежей за эту дату</div>
+    </div>
+  `;
 }
 
 export function renderPaymentsTable(list) {
+  // Подсчитываем общую сумму
+  const total = list.reduce((sum, p) => sum + Number(p.amount), 0);
+
   return `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Patient</th>
-          <th>Amount</th>
-          <th>Method</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${list
-          .map(
-            (p) => `
-          <tr>
-            <td>${escapeHtml(p.time)}</td>
-            <td>${escapeHtml(p.patientName)}</td>
-            <td>${Number(p.amount).toLocaleString()}</td>
-            <td><span class="badge">${escapeHtml(p.method)}</span></td>
-          </tr>
-        `,
-          )
-          .join("")}
-      </tbody>
-    </table>
+    <div class="payments-summary">
+      <div class="payments-summary-item">
+        <span class="payments-summary-label">Всего платежей:</span>
+        <span class="payments-summary-value">${list.length}</span>
+      </div>
+      <div class="payments-summary-item">
+        <span class="payments-summary-label">Общая сумма:</span>
+        <span class="payments-summary-value payments-summary-total">${total.toLocaleString()} ₸</span>
+      </div>
+    </div>
+
+    <div class="payments-list">
+      ${list
+        .map(
+          (p) => `
+        <div class="payment-item">
+          <div class="payment-indicator"></div>
+          <div class="payment-info">
+            <div class="payment-header">
+              <span class="payment-time">${escapeHtml(p.time)}</span>
+              <span class="payment-amount">${Number(p.amount).toLocaleString()} ₸</span>
+            </div>
+            <div class="payment-details">
+              <span class="payment-patient">${escapeHtml(p.patientName)}</span>
+              <span class="payment-method-badge ${escapeHtml(p.method)}">
+                ${p.method === "cash" ? "💵 Наличные" : "💳 Карта"}
+              </span>
+            </div>
+          </div>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
   `;
 }
 

@@ -851,7 +851,6 @@ textarea {
 .cal {
   background: transparent;
   padding: 10px;
-
 }
 
 .cal__top {
@@ -976,7 +975,6 @@ textarea {
   border-right: 0;
 }
 
-
 /* ===== MACDENT-STYLE CALENDAR GRID ===== */
 
 /* Негізгі контейнер */
@@ -985,7 +983,7 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 0;
   overflow: hidden;
-  height: calc(100vh - 120px);
+  height: 92vh;
   display: flex;
   flex-direction: column;
 }
@@ -1122,7 +1120,9 @@ textarea {
   border-radius: 6px;
   padding: 8px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   border-left: 3px solid;
   overflow: hidden;
 }
@@ -1244,7 +1244,7 @@ textarea {
   .calendar-doctor-column {
     min-width: 150px;
   }
-  
+
   .calendar-time-header,
   .calendar-time-column {
     width: 60px;
@@ -1255,8 +1255,515 @@ textarea {
   .calendar-grid-wrapper {
     height: calc(100vh - 200px);
   }
-  
+
   .calendar-doctor-column {
     min-width: 120px;
   }
 }
+
+/* ===== PATIENTS COMPACT LIST STYLE ===== */
+
+.patients-container {
+  padding: 10px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Toolbar */
+.patients-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0px;
+  margin-bottom: 0px;
+  box-shadow: var(--shadow-sm);
+}
+
+.patients-search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f9fafb;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+.patients-search-input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  outline: none;
+}
+
+.patients-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.patients-create-btn:hover {
+  opacity: 0.9;
+}
+
+.patients-create-btn svg {
+  flex-shrink: 0;
+}
+
+/* Content */
+.patients-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Empty state */
+.patients-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* List */
+.patients-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Patient item */
+.patient-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.patient-item:last-child {
+  border-bottom: none;
+}
+
+.patient-item:hover {
+  background: #f9fafb;
+}
+
+/* Indicator dot */
+.patient-indicator {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Patient info */
+.patient-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.patient-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.patient-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.patient-phone {
+  font-weight: 500;
+}
+
+.patient-birth {
+  color: var(--muted);
+}
+
+/* Actions */
+.patient-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.patient-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.patient-action-btn:hover {
+  background: #f1f3f5;
+  border-color: #d1d5db;
+}
+
+.patient-action-btn svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .patients-container {
+    padding: 12px;
+  }
+
+  .patients-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patients-create-btn {
+    justify-content: center;
+  }
+
+  .patient-item {
+    flex-wrap: wrap;
+  }
+
+  .patient-actions {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .patient-action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-name {
+    font-size: 14px;
+  }
+
+  .patient-details {
+    font-size: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .patient-action-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .patient-action-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ===== PAYMENTS COMPACT LIST STYLE ===== */
+
+.payments-container {
+  padding: 10px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Toolbar */
+.payments-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.payments-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  flex: 1;
+}
+
+.payments-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.payments-input {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #f9fafb;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+.payments-input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  outline: none;
+}
+
+.payments-submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.payments-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.payments-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payments-submit-btn svg {
+  flex-shrink: 0;
+}
+
+/* Error */
+.payments-error {
+  min-height: 18px;
+  color: #b91c1c;
+  font-size: 13px;
+  padding: 0 16px;
+  margin-top: 8px;
+}
+
+/* Content */
+.payments-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Empty state */
+.payments-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* Summary */
+.payments-summary {
+  display: flex;
+  gap: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+}
+
+.payments-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payments-summary-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.payments-summary-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.payments-summary-total {
+  color: var(--primary);
+}
+
+/* List */
+.payments-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Payment item */
+.payment-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.payment-item:last-child {
+  border-bottom: none;
+}
+
+.payment-item:hover {
+  background: #f9fafb;
+}
+
+/* Indicator dot */
+.payment-indicator {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Payment info */
+.payment-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.payment-time {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.payment-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.payment-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-patient {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.payment-method-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #64748b;
+}
+
+.payment-method-badge.cash {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.payment-method-badge.card {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .payments-container {
+    padding: 12px;
+  }
+
+  .payments-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .payments-form-group {
+    min-width: 100%;
+  }
+
+  .payments-submit-btn {
+    justify-content: center;
+  }
+
+  .payments-summary {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .payment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .payment-amount {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .payment-patient {
+    font-size: 13px;
+  }
+
+  .payment-method-badge {
+    font-size: 11px;
+  }
+}
+  
